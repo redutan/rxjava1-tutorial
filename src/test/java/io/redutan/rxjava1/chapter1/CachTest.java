@@ -52,11 +52,10 @@ public class CachTest {
             } else {
                 // 비동기로 가져온다
                 dataHolder.getDataAsynchronously(notCachedKey)
-                    .doOnSuccess(value -> {
+                    .subscribe(value -> {
                         s.onNext(value);
                         s.onCompleted();
-                    })
-                    .doOnError(s::onError);
+                    }, s::onError);
             }
         }).subscribe(System.out::println);
 
