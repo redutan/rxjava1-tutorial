@@ -19,4 +19,15 @@ public class BasicTest {
             s.onCompleted();
         }).subscribe(System.out::println);
     }
+
+    @Test
+    public void multiGet() throws Exception {
+        //noinspection deprecation
+        Observable.create(s -> {
+            s.onNext(1);
+            s.onNext(2);
+            s.onNext(3);
+            s.onCompleted();
+        }).subscribe(System.out::println);
+    }
 }
