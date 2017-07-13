@@ -196,8 +196,11 @@ main: Exit
     @Test
     public void testTimer() throws Exception {
         // 1초 지연 후 0 방출
-        Observable.timer(1, TimeUnit.SECONDS)
-            .subscribe(CreateTest::log);
+        Observable<Long> timer = Observable.timer(1, TimeUnit.SECONDS);
+        log("Start");   // timer를 획득하였으나 방출이 되지 않음
+        TimeUnit.MILLISECONDS.sleep(1000);
+        timer.subscribe(CreateTest::log);
+        log("Subscribe");   // subscribe를 시작하자 방출이 됨 : 고로 차가운 스트림
         TimeUnit.MILLISECONDS.sleep(1001);
     }
 
@@ -205,8 +208,11 @@ main: Exit
     public void testInterval() throws Exception {
         // 초당 60개씩 (60Hz) 방출 : 애니메이션 처리 시 유리함
         // ScheduledExecutorService#scheduleAtFixedRate 와 유사하다
-        Subscription subscribe = Observable.interval(1_000_000 / 60, MICROSECONDS)
-            .subscribe(CreateTest::log);
+        Observable<Long> interval = Observable.interval(1_000_000 / 60, MICROSECONDS);
+        log("Start");   // interval을 획득하였으나 방출이 되지 않음
+        TimeUnit.MILLISECONDS.sleep(1000);
+        Subscription subscribe = interval.subscribe(CreateTest::log);
+        log("Subscribe");   // subscribe를 시작하자 방출이 됨 : 고로 차가운 스트림
         TimeUnit.MILLISECONDS.sleep(1000);
         subscribe.unsubscribe();
     }
