@@ -100,13 +100,15 @@ public class TwitterTest {
 
     @Test
     public void testRxTwitterStep1() throws Exception {
-        observe().subscribe(
+        Subscription subscribe = observe().subscribe(
             status -> log.info("Status: {}", status),
             ex -> log.info("Error callback", ex)
         );
+        TimeUnit.SECONDS.sleep(10);
+        subscribe.unsubscribe();
     }
 
-    Observable<Status> observe() {
+    public static Observable<Status> observe() {
         return Observable.create(subscriber -> {
             TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
             twitterStream.addListener(new StatusListener() {
@@ -141,6 +143,7 @@ public class TwitterTest {
             });
             // subscriber가 구독을 해지(unsubscribe())하면 발생시키는 콜백 > 트위터스트림 닫음
             subscriber.add(Subscriptions.create(twitterStream::shutdown));
+            twitterStream.sample();
         });
     }
 
