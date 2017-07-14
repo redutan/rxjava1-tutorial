@@ -1,5 +1,6 @@
 package io.redutan.rxjava1.chapter2;
 
+import io.redutan.rxjava1.LogUtils;
 import org.junit.Test;
 import rx.Observable;
 import rx.Subscription;
@@ -14,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.benas.randombeans.api.EnhancedRandom.random;
+import static io.redutan.rxjava1.LogUtils.log;
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.ZERO;
 import static java.util.concurrent.TimeUnit.MICROSECONDS;
@@ -23,9 +25,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  * @author myeongju.jung
  */
 public class CreateTest {
-    private static void log(Object msg) {
-        System.out.println(Thread.currentThread().getName() + ": " + msg);
-    }
+
 
     static <T> Observable<T> delayed(T x) {
         return Observable.create(
@@ -64,7 +64,7 @@ public class CreateTest {
         try {
             unit.sleep(timeout);
         } catch (InterruptedException ignored) {
-            CreateTest.log(Thread.currentThread().getName() + ": Exit");
+            log(Thread.currentThread().getName() + ": Exit");
         }
     }
 
@@ -136,7 +136,7 @@ main: Exit
             };
             new Thread(r).start();
         });
-        Subscription subscription = naturalNumbers.subscribe(CreateTest::log);
+        Subscription subscription = naturalNumbers.subscribe(LogUtils::log);
         // 시간이 어느정도 지난 다음
         TimeUnit.MILLISECONDS.sleep(100);
         subscription.unsubscribe();
@@ -147,7 +147,7 @@ main: Exit
     public void testCloseResourceDelayed() throws Exception {
         Observable<Integer> delayedInt = delayed(10);
         log("Start");
-        Subscription subscribe = delayedInt.subscribe(CreateTest::log);
+        Subscription subscribe = delayedInt.subscribe(LogUtils::log);
         TimeUnit.MILLISECONDS.sleep(1000);
         log("Exit");
     }
@@ -156,7 +156,7 @@ main: Exit
     public void testCloseResourceFast() throws Exception {
         Observable<Integer> delayedInt = delayedWithInterrupt(10);
         log("Start");
-        Subscription subscribe = delayedInt.subscribe(CreateTest::log);
+        Subscription subscribe = delayedInt.subscribe(LogUtils::log);
         TimeUnit.MILLISECONDS.sleep(1000);
         subscribe.unsubscribe();
         log("Exit");
@@ -166,7 +166,7 @@ main: Exit
     public void testLoadAllWithMultiThread() throws Exception {
         Observable<Data> datas = loadAll(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
         log("Start");
-        Subscription subscribe = datas.subscribe(CreateTest::log);
+        Subscription subscribe = datas.subscribe(LogUtils::log);
         TimeUnit.MILLISECONDS.sleep(1000);
         log("Exit");
     }
@@ -199,7 +199,7 @@ main: Exit
         Observable<Long> timer = Observable.timer(1, TimeUnit.SECONDS);
         log("Start");   // timer를 획득하였으나 방출이 되지 않음
         TimeUnit.MILLISECONDS.sleep(1000);
-        timer.subscribe(CreateTest::log);
+        timer.subscribe(LogUtils::log);
         log("Subscribe");   // subscribe를 시작하자 방출이 됨 : 고로 차가운 스트림
         TimeUnit.MILLISECONDS.sleep(1001);
     }
@@ -211,7 +211,7 @@ main: Exit
         Observable<Long> interval = Observable.interval(1_000_000 / 60, MICROSECONDS);
         log("Start");   // interval을 획득하였으나 방출이 되지 않음
         TimeUnit.MILLISECONDS.sleep(1000);
-        Subscription subscribe = interval.subscribe(CreateTest::log);
+        Subscription subscribe = interval.subscribe(LogUtils::log);
         log("Subscribe");   // subscribe를 시작하자 방출이 됨 : 고로 차가운 스트림
         TimeUnit.MILLISECONDS.sleep(1000);
         subscribe.unsubscribe();
